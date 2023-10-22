@@ -27,18 +27,18 @@
       "required": true,
       "value": ""
     },
-    "ENVIRONMENT": {
-      "description": "لاتعمل اي شـيء",
+    "MATRIXTM": {
+      "description": "ضـع هنا رمـز الامـر كمـثال ⟨ $ * # ! 7 ⟩",
       "required": true,
-      "value": "ANYTHING"
+      "value": ""
     },
     "SUDO_USERS": {
-      "description": "اكـتب يـوزرك",
+      "description": "ضـع يـوزرك",
       "required": true,
       "value": ""
     },
     "SESSION": {
-      "description": "كـود سيـشن بايـروجرام",
+      "description": "ضـع سيـشن بايـروجرام",
       "required": true,
       "value": ""
     }
