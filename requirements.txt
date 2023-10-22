@@ -76,7 +76,6 @@ tswift
 PyMuPDF
 validators
 vcsi
-py-tgcalls==0.9.5
 wand
 wikipedia
 ujson
