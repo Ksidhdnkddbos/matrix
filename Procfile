@@ -1,1 +1,1 @@
-worker: python3 MusicMatrix
+web: python3 main.py
