@@ -1,0 +1,46 @@
+{
+  "name": "🥡 | Matrix Music | 🥡",
+  "description": "🥡 | اެهِلا بَكَ فَيَ سِۅٛࢪسِ مِاެتَࢪكَسِ مِيَۅٛࢪ࣪كَ | 🥡",
+  "keywords": [
+    "telegram",
+    "bot",
+    "python",
+    "pyrogram"
+  ],
+    "buildpacks": [{
+    "url": "heroku/python"
+  }],
+  "repository": "https://github.com/qithoniq/MatrixMusic",
+  "env": {
+    "OWNER_NAME": {
+      "description": "اكـتب اسـمك عـادي او مزخـرف",
+      "required": true,
+      "value": ""
+    },
+    "API_ID": {
+      "description": "ايـبي ايـدي",
+      "required": true,
+      "value": ""
+    },
+    "API_HASH": {
+      "description": "ايـبي هـاش",
+      "required": true,
+      "value": ""
+    },
+    "ENVIRONMENT": {
+      "description": "لاتعمل اي شـيء",
+      "required": true,
+      "value": "ANYTHING"
+    },
+    "SUDO_USERS": {
+      "description": "اكـتب يـوزرك",
+      "required": true,
+      "value": ""
+    },
+    "SESSION": {
+      "description": "كـود سيـشن بايـروجرام",
+      "required": true,
+      "value": ""
+    }
+  }
+}
