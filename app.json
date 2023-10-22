@@ -18,7 +18,7 @@
       "value": ""
     },
     "API_HASH": {
-      "description": "ايـبي هـاش",
+      "description": " ضـع ايـبي هـاش",
       "required": true,
       "value": ""
     },
@@ -29,11 +29,6 @@
     },
     "MATRIXTM": {
       "description": "ضـع هنا رمـز الامـر كمـثال ⟨ $ * # ! 7 ⟩",
-      "required": true,
-      "value": ""
-    },
-    "SUDO_USERS": {
-      "description": "ضـع يـوزرك",
       "required": true,
       "value": ""
     },
