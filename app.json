@@ -17,13 +17,13 @@
       "required": true,
       "value": ""
     },
-    "API_ID": {
-      "description": "ايـبي ايـدي",
+    "API_HASH": {
+      "description": "ايـبي هـاش",
       "required": true,
       "value": ""
     },
-    "API_HASH": {
-      "description": "ايـبي هـاش",
+    "API_ID": {
+      "description": "ضـع ايـبي ايـدي",
       "required": true,
       "value": ""
     },
