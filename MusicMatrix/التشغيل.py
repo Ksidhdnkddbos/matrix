@@ -127,7 +127,7 @@ async def play(client, m: Message):
     if replied:
         if replied.audio or replied.voice:
             await m.delete()
-            huehue = await replied.reply("**🔄 تتم تشغيل انتظر قليلا**")
+            huehue = await replied.reply("**🥢 | يَتَمِ اެݪتـشغيݪ اެنتـظࢪ قݪـيلاެ**")
             dl = await replied.download()
             link = replied.link
             if replied.audio:
@@ -144,10 +144,10 @@ async def play(client, m: Message):
                 await m.reply_photo(
                     photo="https://l.top4top.io/p_2363dcjiw1.jpg",
                     caption=f"""
-**🏷️ العنوان : [{songname}]({link})
-💬 ايدي الدردشة : {chat_id}
-🎧 طلب من : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**العنوان : [{songname}]({link})
+ايدي الدردشة : {chat_id}
+طلب من : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                 )
             else:
@@ -164,11 +164,11 @@ async def play(client, m: Message):
                 await m.replyhttps_photo(
                     photo="https://l.top4top.io/p_2363dcjiw1.jpg",
                     caption=f"""
-**▶ تم تشغيل الاغنية 
-**🏷️ العنوان : [{songname}]({link})
-💬 ايدي الدردشة : {chat_id}
-🎧 طلب من : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**تم تشغيل الاغنية 
+**العنوان : [{songname}]({link})
+ايدي الدردشة : {chat_id}
+طلب من : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                 )
 
@@ -197,11 +197,11 @@ async def play(client, m: Message):
                         await m.reply_photo(
                             photo=f"{thumbnail}",
                             caption=f"""
-**🏷️  العنوان : [{songname}]({url})
-⏱️ المدة : {duration}
-💬 ايدي المحادثه : {chat_id}
-🎧 طلب من : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**العنوان : [{songname}]({url})
+المدة : {duration}
+ايدي المحادثه : {chat_id}
+طلب من : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                         )
                     else:
@@ -219,12 +219,12 @@ async def play(client, m: Message):
                             await m.reply_photo(
                                 photo=f"{thumbnail}",
                                 caption=f"""
-**▶ بدأ تشغيل الاغنية
-**🏷️  العنوان : [{songname}]({url})
-⏱️ المدة : {duration}
-💬 ايدي المحادثه : {chat_id}
-🎧 طلب من : {m.from_user.mention}💻
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**بدأ تشغيل الاغنية
+**العنوان : [{songname}]({url})
+المدة : {duration}
+ايدي المحادثه : {chat_id}
+طلب من : {m.from_user.mention}💻
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                             )
                         except Exception as ep:
@@ -266,11 +266,11 @@ async def vplay(client, m: Message):
                 await m.reply_photo(
                     photo="https://l.top4top.io/p_2363dcjiw1.jpg",
                     caption=f"""
-#⃣ Video Di Antrian Ke {pos}
-**🏷️  العنوان : [{songname}]({url})
-💬 ايدي المحادثه : {chat_id}
-🎧 طلب من : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+#Video Di Antrian Ke {pos}
+**العنوان : [{songname}]({url})
+ايدي المحادثه : {chat_id}
+طلب من : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                 )
             else:
@@ -291,10 +291,10 @@ async def vplay(client, m: Message):
                 await m.reply_photo(
                     photo="https://l.top4top.io/p_2363dcjiw1.jpg",
                     caption=f"""
-**🏷️  العنوان : [{songname}]({url})
-💬 ايدي المحادثه : {chat_id}
-🎧 طلب من : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**العنوان : [{songname}]({url})
+ايدي المحادثه : {chat_id}
+طلب من : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                 )
 
@@ -330,11 +330,11 @@ async def vplay(client, m: Message):
                         await m.reply_photo(
                             photo=f"{thumbnail}",
                             caption=f"""
-**🏷️  العنوان : [{songname}]({url})
-⏱️ المدة : {duration}
-💬 ايدي المحادثه : {chat_id}
-🎧 طلب من : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**العنوان : [{songname}]({url})
+المدة : {duration}
+ايدي المحادثه : {chat_id}
+طلب من : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                         )
                     else:
@@ -350,11 +350,11 @@ async def vplay(client, m: Message):
                             await m.reply_photo(
                                 photo=f"{thumbnail}",
                                 caption=f"""
-**🏷️  العنوان : [{songname}]({url})
-⏱️ المدة : {duration}
-💬 ايدي المحادثه : {chat_id}
-🎧 طلب من : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**العنوان : [{songname}]({url})
+المدة : {duration}
+ايدي المحادثه : {chat_id}
+طلب من : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,
                             )
                         except Exception as ep:
@@ -400,11 +400,11 @@ async def playfrom(client, m: Message):
                     await m.reply_photo(
                         photo="https://l.top4top.io/p_2363dcjiw1.jpg",
                         caption=f"""
-**▶ ابدأ تشغيل الأغاني من {chat}
-🏷️ العنوان : [{songname}]({link})
-💬 الدردشة : {chat_id}
-🎧 من الطلب : {m.from_user.mention}
-💻 قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
+**ابدأ تشغيل الأغاني من {chat}
+العنوان : [{songname}]({link})
+الدردشة : {chat_id}
+من الطلب : {m.from_user.mention}
+قناة السورس : [ قناة السورس ](t.me/MUSICTTMATRIX)**
 """,                  
          )
             await hmm.delete()
@@ -415,7 +415,7 @@ async def playfrom(client, m: Message):
             await hmm.edit(f"**هناك خطا ** \n`{e}`")
 
 
-@Client.on_message(filters.command(["القائمة", "الطابور"], prefixes=f"{MATRIXTM}"))
+@Client.on_message(filters.command(["القائمة"], prefixes=f"{MATRIXTM}"))
 async def playlist(client, m: Message):
     chat_id = m.chat.id
     if chat_id in QUEUE:
@@ -423,11 +423,11 @@ async def playlist(client, m: Message):
         if len(chat_queue) == 1:
             await m.delete()
             await m.reply(
-                f"**🎧 الاغاني الشغالة الان :** \n[{chat_queue[0][0]}]({chat_queue[0][2]}) | `{chat_queue[0][3]}`",
+                f"**الاغاني الشغالة الان :** \n[{chat_queue[0][0]}]({chat_queue[0][2]}) | `{chat_queue[0][3]}`",
                 disable_web_page_preview=True,
             )
         else:
-            QUE = f"**🎧 الاغاني الشغالة الان:** \n[{chat_queue[0][0]}]({chat_queue[0][2]}) | `{chat_queue[0][3]}` \n\n**⏯ قائمة الانتظار :**"
+            QUE = f"**الاغاني الشغالة الان:** \n[{chat_queue[0][0]}]({chat_queue[0][2]}) | `{chat_queue[0][3]}` \n\n**⏯ قائمة الانتظار :**"
             l = len(chat_queue)
             for x in range(1, l):
                 hmm = chat_queue[x][0]
