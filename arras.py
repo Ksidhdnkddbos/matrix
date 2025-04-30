@@ -1,122 +1,118 @@
-from telethon import TelegramClient, events, functions
+from telethon import TelegramClient, events
 from telethon.sessions import StringSession
+from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.tl.functions.messages import EditMessageRequest
 from datetime import datetime
-import asyncio
 import pytz
+import asyncio
+import os
 
-api_id = YOUR_API_ID
-api_hash = 'YOUR_API_HASH'
-session_string = 'YOUR_SESSION_STRING'
+api_id = 23725562
+api_hash = 'f72417e564acce43e1143e2b797c73fb'
+session_string = "YOUR_SESSION_STRING_HERE"
 
-number_map = {
-    '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰',
-    '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
-}
-
-def get_current_timezone():
-    return pytz.timezone('Asia/Baghdad')
+aRRaS_USER_IDS = ['7872828412', '6349091574']
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 
-# arras
-updating_firstname = False
-updating_lastname = False
+timezone = pytz.timezone('Asia/Baghdad')
+running_first = False
+running_last = False
 
-async def update_firstname_loop():
-    global updating_firstname
-    while updating_firstname:
-        now = datetime.now(get_current_timezone())
-        current_time = now.strftime("%I:%M")
-        fancy_time = ''.join(number_map.get(ch, ch) for ch in current_time)
+def decorate_time(time_str):
+    number_mapping = {
+        '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰',
+        '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
+    }
+    return ''.join([number_mapping.get(char, char) for char in time_str])
+
+async def update_names():
+    while running_first or running_last:
+        now = datetime.now(timezone).strftime("%I:%M")
+        decorated_time = decorate_time(now)
+        
+        first_name = decorated_time if running_first else None
+        last_name = decorated_time if running_last else None
+        
         try:
-            # تحديث الاسم الأول فقط مع الحفاظ على الاسم الأخير الحالي
-            full = await client(functions.users.GetFullUserRequest('me'))
-            current_last_name = full.user.last_name or None
-
-            await client(functions.account.UpdateProfileRequest(
-                first_name=fancy_time,
-                last_name=current_last_name
+            await client(UpdateProfileRequest(
+                first_name=first_name,
+                last_name=last_name
             ))
-            print(f"تم تحديث الاسم الأول إلى: {fancy_time}")
+            print(f"تم التحديث: الاسم الأول ({first_name}) | العائلة ({last_name})")
         except Exception as e:
-            print(f"خطأ بتحديث الاسم الأول: {e}")
-        await asyncio.sleep(60)
+            print(f"خطأ: {e}")
+        
+        await asyncio.sleep(10)
 
-async def update_lastname_loop():
-    global updating_lastname
-    while updating_lastname:
-        now = datetime.now(get_current_timezone())
-        current_time = now.strftime("%I:%M")
-        fancy_time = ''.join(number_map.get(ch, ch) for ch in current_time)
-        try:
-            # تحديث الاسم الأخير فقط مع الحفاظ على الاسم الأول الحالي | arras
-            full = await client(functions.users.GetFullUserRequest('me'))
-            current_first_name = full.user.first_name or " "
+def is_allowed(user_id):
+    return str(user_id) in aRRaS_USER_IDS
 
-            await client(functions.account.UpdateProfileRequest(
-                first_name=current_first_name,
-                last_name=fancy_time
-            ))
-            print(f"تم تحديث اسم العائلة إلى: {fancy_time}")
-        except Exception as e:
-            print(f"خطأ بتحديث اسم العائلة: {e}")
-        await asyncio.sleep(60)
+async def edit_command_message(event, new_text):
+    try:
+        await client.edit_message(
+            await event.get_input_chat(),
+            event.message.id,
+            new_text
+        )
+    except Exception as e:
+        print(f"خطأ في تعديل الرسالة: {e}")
 
-@client.on(events.NewMessage(pattern=r'^\.اسم وقتي$'))
-async def start_firstname(event):
-    global updating_firstname
-    if not updating_firstname:
-        updating_firstname = True
-        await event.reply("✅ تم تشغيل تحديث الاسم الأول بالوقت")
-        client.loop.create_task(update_firstname_loop())
+@client.on(events.NewMessage(pattern='^.اسم وقتي$'))
+async def activate_first_name(event):
+    global running_first
+    if not is_allowed(event.sender_id):
+        return
+    
+    if not running_first:
+        running_first = True
+        asyncio.create_task(update_names())
+        await edit_command_message(event, "✓ تم تفعيل الاسم الوقتي  ¹")
     else:
-        await event.reply("⚠️ تحديث الاسم الأول يعمل بالفعل")
+        await edit_command_message(event, "⚠ الاسم الوقتي  ¹ مفعل مسبقا .")
 
-@client.on(events.NewMessage(pattern=r'^\.تعطيل اسم وقتي$'))
-async def stop_firstname(event):
-    global updating_firstname
-    if updating_firstname:
-        updating_firstname = False
-        #arras
-        try:
-            full = await client(functions.users.GetFullUserRequest('me'))
-            current_last_name = full.user.last_name or None
-            await client(functions.account.UpdateProfileRequest(first_name=None, last_name=current_last_name))
-        except Exception as e:
-            print(f"خطأ بإعادة الاسم الأول: {e}")
-        await event.reply("🛑 تم إيقاف تحديث الاسم الأول")
-    else:
-        await event.reply("⚠️ تحديث الاسم الأول موقوف أصلاً")
+@client.on(events.NewMessage(pattern='^.الاوامر$'))
+async def show_commands(event):
+    if not is_allowed(event.sender_id):
+        return
+    
+    commands = """
+⚡️ قائمة الأوامر :
 
-@client.on(events.NewMessage(pattern=r'^\.اسم وقتي2$'))
-async def start_lastname(event):
-    global updating_lastname
-    if not updating_lastname:
-        updating_lastname = True
-        await event.reply("✅ تم تشغيل تحديث اسم العائلة بالوقت")
-        client.loop.create_task(update_lastname_loop())
-    else:
-        await event.reply("⚠️ تحديث اسم العائلة يعمل بالفعل")
+1. `.اسم وقتي` - تفعيل الاسم الأول الوقتى
+2. `.اسم وقتي2` - تفعيل اسم العائلة الوقتى
+3. `.تعطيل اسم وقتي` - إيقاف كلا الاسمين
+"""
+    await edit_command_message(event, commands)
 
-@client.on(events.NewMessage(pattern=r'^\.تعطيل اسم وقتي2$'))
-async def stop_lastname(event):
-    global updating_lastname
-    if updating_lastname:
-        updating_lastname = False
-        try:
-            full = await client(functions.users.GetFullUserRequest('me'))
-            current_first_name = full.user.first_name or " "
-            await client(functions.account.UpdateProfileRequest(last_name=None, first_name=current_first_name))
-        except Exception as e:
-            print(f"خطأ بإعادة اسم العائلة: {e}")
-        await event.reply("🛑 تم إيقاف تحديث اسم العائلة")
+@client.on(events.NewMessage(pattern='^.اسم وقتي2$'))
+async def activate_last_name(event):
+    global running_last
+    if not is_allowed(event.sender_id):
+        return
+    
+    if not running_last:
+        running_last = True
+        asyncio.create_task(update_names())
+        await edit_command_message(event, "✓ تم تفعيل الاسم الوقتي ²")
     else:
-        await event.reply("⚠️ تحديث اسم العائلة موقوف أصلاً")
+        await edit_command_message(event, "⚠ اسم الوقتي ² مفعل مسبقا .")
+
+@client.on(events.NewMessage(pattern='^.تعطيل اسم وقتي$'))
+async def deactivate_all(event):
+    global running_first, running_last
+    if not is_allowed(event.sender_id):
+        return
+    
+    running_first = running_last = False
+    await edit_command_message(event, "✗ تم تعطيل كافة الأسماء الوقتية")
+
+
 
 async def main():
     await client.start()
-    print("بوت الاسم الوقتي شغال...")
+    print("✅ البوت يعمل الآن")
     await client.run_until_disconnected()
 
-client.loop.run_until_complete(main())
-          
+if __name__ == '__main__':
+    client.loop.run_until_complete(main())
