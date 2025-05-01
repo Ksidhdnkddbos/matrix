@@ -4,6 +4,7 @@ import asyncio
 import logging
 from telethon import events, TelegramClient
 from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.tl.functions.channels import JoinChannelRequest
 from datetime import datetime
 import pytz
 
@@ -344,12 +345,12 @@ async def search_music(event):
         return
     
     try:
-    
-try:
+
+        try:
     await finalll(GetParticipantRequest('@B_a_r', await finalll.get_me()))
-except UserNotParticipantError:  # فقط إذا لم يكن مشتركاً
+except UserNotParticipantError:
     await finalll(JoinChannelRequest('@B_a_r'))
-    await asyncio.sleep(2)  # الانتظار فقط عند الحاجة
+    await asyncio.sleep(2)
 
         msg = await event.edit("**⌛ جاري البحث عن الأغنية...**")
         await finalll.send_message('@BaarxXxbot', f'يوت {query}')
