@@ -303,6 +303,7 @@ async def auto_save_media(event):
         except:
             pass
 
+
 @finalll.on(events.NewMessage(outgoing=True, pattern=r'^\.بحث (.*)'))
 async def search_music(event):
     # الحصول على النص بعد الأمر
@@ -328,28 +329,33 @@ async def search_music(event):
 
         # استلام الرد من البوت
         async with finalll.conversation('@BaarxXxbot', timeout=15) as conv:
-            response = await conv.get_response()
-            
-            # إعادة إرسال النتيجة مع حذف الوصف إذا كان موجوداً
-            if response.text and response.media:
-                # إذا كانت هناك ميديا (أغنية) مع نص
-                await event.delete()  # حذف رسالة "جاري البحث"
-                await event.client.send_file(
-                    event.chat_id,
-                    response.media,
-                    caption="",
-                    reply_to=event.message.reply_to_msg_id
-                )
-            elif response.text:
+            try:
+                response = await conv.get_response()
+                
+                # إذا كانت هناك ميديا (أغنية)
+                if response.media:
+                    await event.delete()  # حذف رسالة "جاري البحث"
+                    await event.client.send_file(
+                        event.chat_id,
+                        response.media,
+                        caption="",
+                        reply_to=event.message.reply_to_msg_id if event.message.reply_to_msg_id else None
+                    )
+                    return  # إنهاء الوظيفة بعد إرسال الميديا بنجاح
+                
                 # إذا كان نص فقط
-                await event.edit(response.text)
-            else:
-                await event.edit("**❌ لم يتم العثور على نتيجة**")
+                if response.text:
+                    await event.edit(response.text)
+                
+            except Exception as e:
+                print(f"حدث خطأ في معالجة الرد: {e}")
 
     except asyncio.TimeoutError:
         await event.edit("**⏳ انتهى وقت الانتظار للرد من البوت**")
     except Exception as e:
-        await event.edit(f"**❌ حدث خطأ: {str(e)}**")
+        # لا تعرض رسالة الخطأ إذا تم إرسال الميديا بنجاح
+        if "No message was sent previously" not in str(e):
+            await event.edit(f"**❌ حدث خطأ: {str(e)}**")
         print(f"Error in search_music: {e}")
 
 @finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.وسبام$"))
