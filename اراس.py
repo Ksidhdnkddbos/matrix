@@ -12,17 +12,15 @@ api_id = 23240929
 api_hash = 'c86e205a2bca8d6381b30a0d7681bba0'
 
 # قائمة المسموح لهم باستخدام أوامر الاسم الوقتي (أضف أرقام المستخدمين الخاص بك)
-aRRaS_users = ['123456789', '987654321']  # غيرها إلى أرقامك!
+aRRaS_users = ['123456789', '987654321']  
 
 finalll = TelegramClient(session=None, api_id=api_id, api_hash=api_hash) 
 finalll.start()
 
-# متغيرات الاسم الوقتي
 timezone = pytz.timezone('Asia/Baghdad')
 arras_first = False
 arras_last = False
-final = False  # متغير النشر التلقائي (من الكود الأصلي)
-
+final = False  
 def decorate_time(time_str):
     number_mapping = {
         '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰',
@@ -86,7 +84,6 @@ async def deactivate_all(event):
     
     arras_first = arras_last = False
     await event.edit("**✗ تم إيقاف الاسم الوقتي بنجاح**")
-
 
 
 async def final_nshr(finalll, sleeptimet, chat, message, seconds):
