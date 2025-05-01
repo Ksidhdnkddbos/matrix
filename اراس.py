@@ -275,9 +275,9 @@ async def final_handler(event):
 
     elif cmd == "م4":
         search_download_commands = """
-        **او مـر البـحث والتحـميل**
+        **اوامـر البـحث والتحـميل**
 
-`.بحث <اسم الأغنية أو الفيديو>` 
+`.بحث` + اسم الاغنية 
 - للبحث عن أغنية .
 
 ~ الشرح: استخدم الأمر بالرد على رسالة أو لوحده مع اسم ما تريد البحث عنه.
@@ -340,7 +340,6 @@ async def auto_save_media(event):
 
 @finalll.on(events.NewMessage(outgoing=True, pattern=r'^\.بحث (.*)'))
 async def search_music(event):
-    # الحصول على النص بعد الأمر
     query = event.pattern_match.group(1).strip()
     if not query:
         await event.edit("**⚠️ يرجى كتابة ما تريد البحث عنه بعد الأمر .بحث**")
@@ -363,7 +362,7 @@ async def search_music(event):
         msg = await event.edit("**⌛ جاري البحث عن الأغنية...**")
         await finalll.send_message('@BaarxXxbot', f'يوت {query}')
         
-        await asyncio.sleep(4)
+        await asyncio.sleep(5)
         
         async for message in finalll.iter_messages('@BaarxXxbot', limit=1):
             if message.media:
