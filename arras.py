@@ -62,7 +62,7 @@ async def activate_first_name(event):
     if not running_first:
         running_first = True
         asyncio.create_task(update_names())
-        await event.edit("**✓ تم تفعيل الاسم الوقتي (الاسم الأول)**")
+        await event.edit("**✓ تم تفعيل الاسم الوقتي ¹**")
     else:
         await event.edit("**⚠️ الاسم الوقتي مفعل بالفعل!**")
 
@@ -75,7 +75,7 @@ async def activate_last_name(event):
     if not running_last:
         running_last = True
         asyncio.create_task(update_names())
-        await event.edit("**✓ تم تفعيل الاسم الوقتي (اسم العائلة)**")
+        await event.edit("**✓ تم تفعيل الاسم الوقتي ²**")
     else:
         await event.edit("**⚠️ اسم العائلة الوقتي مفعل بالفعل!**")
 
