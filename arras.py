@@ -316,46 +316,35 @@ async def search_music(event):
         # الانضمام التلقائي للقناة
         try:
             await finalll(JoinChannelRequest('@B_a_r'))
-            await asyncio.sleep(2)  # انتظار 2 ثانية بعد الانضمام
+            await asyncio.sleep(2)
         except Exception as e:
             print(f"حدث خطأ في الانضمام للقناة: {e}")
 
         # إرسال الطلب إلى بوت الموسيقى
-        await event.edit("**⌛ جاري البحث عن الأغنية...**")
+        msg = await event.edit("**⌛ جاري البحث عن الأغنية...**")
         await finalll.send_message('@BaarxXxbot', f'يوت {query}')
         
-        # الانتظار 5 ثواني قبل التحقق من الرد
+        # الانتظار والتحقق من الرد
         await asyncio.sleep(5)
+        
+        # الحصول على آخر رسالة من البوت
+        async for message in finalll.iter_messages('@BaarxXxbot', limit=1):
+            if message.media:
+                # إرسال الميديا إلى الدردشة الأصلية
+                await msg.delete()  # حذف رسالة الانتظار
+                await finalll.send_file(
+                    event.chat_id,
+                    message.media,
+                    caption="",
+                    reply_to=event.message.reply_to_msg_id
+                )
+            elif message.text:
+                await event.edit(f"**البوت أرسل:**\n{message.text}")
+            else:
+                await event.edit("**❌ لم يتم العثور على نتيجة**")
 
-        # استلام الرد من البوت
-        async with finalll.conversation('@BaarxXxbot', timeout=15) as conv:
-            try:
-                response = await conv.get_response()
-                
-                # إذا كانت هناك ميديا (أغنية)
-                if response.media:
-                    await event.delete()  # حذف رسالة "جاري البحث"
-                    await event.client.send_file(
-                        event.chat_id,
-                        response.media,
-                        caption="",
-                        reply_to=event.message.reply_to_msg_id if event.message.reply_to_msg_id else None
-                    )
-                    return  # إنهاء الوظيفة بعد إرسال الميديا بنجاح
-                
-                # إذا كان نص فقط
-                if response.text:
-                    await event.edit(response.text)
-                
-            except Exception as e:
-                print(f"حدث خطأ في معالجة الرد: {e}")
-
-    except asyncio.TimeoutError:
-        await event.edit("**⏳ انتهى وقت الانتظار للرد من البوت**")
     except Exception as e:
-        # لا تعرض رسالة الخطأ إذا تم إرسال الميديا بنجاح
-        if "No message was sent previously" not in str(e):
-            await event.edit(f"**❌ حدث خطأ: {str(e)}**")
+        await event.edit(f"**❌ حدث خطأ: {str(e)}**")
         print(f"Error in search_music: {e}")
 
 @finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.وسبام$"))
