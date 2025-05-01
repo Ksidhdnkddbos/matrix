@@ -303,7 +303,37 @@ async def auto_save_media(event):
         except:
             pass
 
-
+@finalll.on(events.NewMessage(outgoing=True, pattern=r'^\.بحث (.*)'))
+async def search_music(event):
+    # الحصول على النص بعد الأمر
+    query = event.pattern_match.group(1).strip()
+    if not query:
+        await event.edit("**⚠️ يرجى كتابة ما تريد البحث عنه بعد الأمر .بحث**")
+        return
+    
+    # إرسال الطلب إلى بوت الموسيقى
+    try:
+        await finalll.send_message('@BaarxXxbot', f'يوت {query}')
+        await event.edit(f"**✓ تم إرسال طلبك إلى البوت: يوت {query}**")
+        
+        # الانتظار لرد البوت
+        async with finalll.conversation('@BaarxXxbot', timeout=20) as conv:
+            response = await conv.get_response()
+            
+            if "يجب الاشتراك بالقناه اولا" in response.text:
+                await event.edit("**عزيزي اشترك بالقناة قبل استخدام الأمر\nهذه هي القناة @B_a_r**")
+            else:
+                # إعادة إرسال النتيجة إذا لم تكن رسالة اشتراك
+                await event.client.send_message(
+                    event.chat_id,
+                    response,
+                    reply_to=event.message.reply_to_msg_id
+                )
+                
+    except asyncio.TimeoutError:
+        await event.edit("**⏳ انتهى وقت الانتظار للرد من البوت**")
+    except Exception as e:
+        await event.edit(f"**❌ حدث خطأ: {str(e)}**")
 
 @finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.وسبام$"))
 async def word_spam_handler(event):
