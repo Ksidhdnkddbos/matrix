@@ -4,7 +4,7 @@ import asyncio
 import logging
 from telethon import events, TelegramClient
 from telethon.tl.functions.account import UpdateProfileRequest
-from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.functions.channels import GetParticipantRequest, JoinChannelRequest
 from telethon.tl.functions.messages import DeleteHistoryRequest
 from datetime import datetime
 import pytz
