@@ -1,23 +1,27 @@
-from telethon import TelegramClient, events
-from telethon.sessions import StringSession
+import os
+import re
+import asyncio
+import logging
+from telethon import events, TelegramClient
 from telethon.tl.functions.account import UpdateProfileRequest
-from telethon.tl.functions.messages import EditMessageRequest
 from datetime import datetime
 import pytz
-import asyncio
-import os
 
-api_id = 23725562
-api_hash = 'f72417e564acce43e1143e2b797c73fb'
-session_string = "YOUR_SESSION_STRING_HERE"
+# إعدادات API (يجب تغييرها!)
+api_id = 23240929
+api_hash = 'c86e205a2bca8d6381b30a0d7681bba0'
 
-aRRaS_USER_IDS = ['7872828412', '6349091574']
+# قائمة المسموح لهم باستخدام أوامر الاسم الوقتي (أضف أرقام المستخدمين الخاص بك)
+allowed_users = ['123456789', '987654321']  # غيرها إلى أرقامك!
 
-client = TelegramClient(StringSession(session_string), api_id, api_hash)
+finalll = TelegramClient(session=None, api_id=api_id, api_hash=api_hash) 
+finalll.start()
 
+# متغيرات الاسم الوقتي
 timezone = pytz.timezone('Asia/Baghdad')
 running_first = False
 running_last = False
+final = False  # متغير النشر التلقائي (من الكود الأصلي)
 
 def decorate_time(time_str):
     number_mapping = {
@@ -35,84 +39,364 @@ async def update_names():
         last_name = decorated_time if running_last else None
         
         try:
-            await client(UpdateProfileRequest(
+            await finalll(UpdateProfileRequest(
                 first_name=first_name,
                 last_name=last_name
             ))
-            print(f"تم التحديث: الاسم الأول ({first_name}) | العائلة ({last_name})")
+            print(f"تم تحديث الاسم الوقتي: {decorated_time}")
         except Exception as e:
-            print(f"خطأ: {e}")
+            print(f"خطأ في تحديث الاسم: {e}")
         
         await asyncio.sleep(10)
 
 def is_allowed(user_id):
-    return str(user_id) in aRRaS_USER_IDS
+    return str(user_id) in allowed_users
 
-async def edit_command_message(event, new_text):
-    try:
-        await client.edit_message(
-            await event.get_input_chat(),
-            event.message.id,
-            new_text
-        )
-    except Exception as e:
-        print(f"خطأ في تعديل الرسالة: {e}")
-
-@client.on(events.NewMessage(pattern='^.اسم وقتي$'))
+# ========= أوامر الاسم الوقتي =========
+@finalll.on(events.NewMessage(outgoing=True, pattern='^.اسم وقتي$'))
 async def activate_first_name(event):
     global running_first
     if not is_allowed(event.sender_id):
-        return
+        return await event.edit("**⚠️ ليس لديك صلاحية استخدام هذا الأمر!**")
     
     if not running_first:
         running_first = True
         asyncio.create_task(update_names())
-        await edit_command_message(event, "✓ تم تفعيل الاسم الوقتي  ¹")
+        await event.edit("**✓ تم تفعيل الاسم الوقتي (الاسم الأول)**")
     else:
-        await edit_command_message(event, "⚠ الاسم الوقتي  ¹ مفعل مسبقا .")
+        await event.edit("**⚠️ الاسم الوقتي مفعل بالفعل!**")
 
-@client.on(events.NewMessage(pattern='^.الاوامر$'))
-async def show_commands(event):
-    if not is_allowed(event.sender_id):
-        return
-    
-    commands = """
-⚡️ قائمة الأوامر :
-
-1. `.اسم وقتي` - تفعيل الاسم الأول الوقتى
-2. `.اسم وقتي2` - تفعيل اسم العائلة الوقتى
-3. `.تعطيل اسم وقتي` - إيقاف كلا الاسمين
-"""
-    await edit_command_message(event, commands)
-
-@client.on(events.NewMessage(pattern='^.اسم وقتي2$'))
+@finalll.on(events.NewMessage(outgoing=True, pattern='^.اسم وقتي2$'))
 async def activate_last_name(event):
     global running_last
     if not is_allowed(event.sender_id):
-        return
+        return await event.edit("**⚠️ ليس لديك صلاحية استخدام هذا الأمر!**")
     
     if not running_last:
         running_last = True
         asyncio.create_task(update_names())
-        await edit_command_message(event, "✓ تم تفعيل الاسم الوقتي ²")
+        await event.edit("**✓ تم تفعيل الاسم الوقتي (اسم العائلة)**")
     else:
-        await edit_command_message(event, "⚠ اسم الوقتي ² مفعل مسبقا .")
+        await event.edit("**⚠️ اسم العائلة الوقتي مفعل بالفعل!**")
 
-@client.on(events.NewMessage(pattern='^.تعطيل اسم وقتي$'))
+@finalll.on(events.NewMessage(outgoing=True, pattern='^.تعطيل اسم وقتي$'))
 async def deactivate_all(event):
     global running_first, running_last
     if not is_allowed(event.sender_id):
-        return
+        return await event.edit("**⚠️ ليس لديك صلاحية استخدام هذا الأمر!**")
     
     running_first = running_last = False
-    await edit_command_message(event, "✗ تم تعطيل كافة الأسماء الوقتية")
+    await event.edit("**✗ تم إيقاف الاسم الوقتي بنجاح**")
 
 
 
-async def main():
-    await client.start()
-    print("✅ البوت يعمل الآن")
-    await client.run_until_disconnected()
+async def final_nshr(finalll, sleeptimet, chat, message, seconds):
+    global final
+    final = True
+    while final:
+        if message.media:
+            sent_message = await finalll.send_file(chat, message.media, caption=message.text)
+        else:
+            sent_message = await finalll.send_message(chat, message.text)
+        await asyncio.sleep(sleeptimet)
 
-if __name__ == '__main__':
-    client.loop.run_until_complete(main())
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.نشر (\d+) (@?\S+)$"))
+async def final_handler(event):
+    await event.delete()
+    parameters = re.split(r'\s+', event.text.strip(), maxsplit=2)
+    if len(parameters) != 3:
+        return await event.reply("   يجب استخدام كتابة صحيحة الرجاء التاكد من الامر اولا   ")
+    seconds = int(parameters[1])
+    chat_usernames = parameters[2].split()
+    finalll = event.client
+    global final
+    final = True
+    message = await event.get_reply_message()
+    for chat_username in chat_usernames:
+        try:
+            chat = await finalll.get_entity(chat_username)
+            await final_nshr(finalll, seconds, chat.id, message, seconds)
+        except Exception as e:
+            await event.reply(f"   لا يمكن العثور على المجموعة أو الدردشة {chat_username}: {str(e)}")
+        await asyncio.sleep(1)
+
+
+async def final_allnshr(finalll, sleeptimet, message):
+    global final
+    final = True
+    final_chats = await finalll.get_dialogs()
+    while final:
+        for chat in final_chats:
+            if chat.is_group:
+                try:
+                    if message.media:
+                        await finalll.send_file(chat.id, message.media, caption=message.text)
+                    else:
+                        await finalll.send_message(chat.id, message.text)
+                except Exception as e:
+                    print(f"Error in sending message to chat {chat.id}: {e}")
+        await asyncio.sleep(sleeptimet)
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.نشر_كروبات (\d+)$"))
+async def final_handler(event):
+    await event.delete()
+    seconds = "".join(event.text.split(maxsplit=1)[1:]).split(" ", 2)
+    message = await event.get_reply_message()
+    try:
+        sleeptimet = int(seconds[0])
+    except Exception:
+        return await event.reply("   يجب استخدام كتابة صحيحة الرجاء التاكد من الامر اولا   ")
+    finalll = event.client
+    global final
+    final = True
+    await final_allnshr(finalll, sleeptimet, message)
+
+
+super_groups = ["super", "سوبر"]
+
+
+async def final_supernshr(finalll, sleeptimet, message):
+    global final
+    final = True
+    final_chats = await finalll.get_dialogs()
+    while final:
+        for chat in final_chats:
+            chat_title_lower = chat.title.lower()
+            if chat.is_group and any(keyword in chat_title_lower for keyword in super_groups):
+                try:
+                    if message.media:
+                        await finalll.send_file(chat.id, message.media, caption=message.text)
+                    else:
+                        await finalll.send_message(chat.id, message.text)
+                except Exception as e:
+                    print(f"Error in sending message to chat {chat.id}: {e}")
+        await asyncio.sleep(sleeptimet)
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.سوبر (\d+)$"))
+async def final_handler(event):
+    await event.delete()
+    seconds = "".join(event.text.split(maxsplit=1)[1:]).split(" ", 2)
+    message = await event.get_reply_message()
+    try:
+        sleeptimet = int(seconds[0])
+    except Exception:
+        return await event.reply("   يجب استخدام كتابة صحيحة الرجاء التاكد من الامر   اولا")
+    finalll = event.client
+    global final
+    final = True
+    await final_supernshr(finalll, sleeptimet, message)
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern='.ايقاف النشر'))
+async def stop_final(event):
+    global final
+    final = False
+    await event.edit("**  ︙ تم ايقاف النشر التلقائي بنجاح ✓  ** ")
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.(الاوامر|فحص|م1|م2)$"))
+async def final_handler(event):
+    await event.delete()
+    if event.pattern_match.group(1) == "م1":
+        final_commands = """**
+   قـائمة اوامر النشر التلقائي 
+
+===== F i n a L=====
+
+`.نشر` عدد الثواني معرف الكروب :
+ - للنشر في المجموعة التي وضعت معرفها مع عدد الثواني
+
+`.نشر_كروبات` عدد الثواني : 
+- للنشر في جميع المجموعات الموجوده في حسابك
+ 
+`.سوبر` عدد الثواني : 
+- للنشر بكافة المجموعات السوبر التي منظم اليها 
+
+`.تناوب` عدد الثواني : 
+- للنشر في جميع المجموعات بالتناوب وحسب الوقت المحدد 
+
+`.خاص` : 
+- للنشر في جميع المحادثات الخاصة مرة واحدة فقط
+
+`.نقط` عدد الثواني : 
+- للرد على نفس الرسالة ب (.) وحسب الوقت المحدد 
+
+`.مكرر` عدد الثواني : 
+- لتكرار نفس الرسالة وحسب الوقت المحدد 
+
+`.سبام` : 
+- يرسل الجملة حرف بعد حرف الى ان تنتهي الجملة .
+
+`.وسبام` :
+- يرسل الجملة كلمة بعد كلمة
+
+`.ايقاف النشر` :
+- لأيقاف جميع انواع النشر اعلاه
+
+
+• مُـلاحظة : جميع الأوامر اعلاه تستخدم بالرد على الرسالة او الكليشة المُراد نشرها
+
+• مُـلاحظة : جميع الأوامر اعلاه تستقبل صورة واحدة موصوفة بنص وليس اكثر من ذلك 
+
+
+
+    **"""
+        await event.reply(file='https://graph.org/file/bc08fcf7de6be2a88057a-76431830a0d3ffd01d.jpg', message=final_commands)
+    elif event.pattern_match.group(1) == "فحص":
+        final_check = "**سورس F IN A L يعمل \nلعرض قائمة الاوامر أرسل `.الاوامر`**"
+        await event.reply(file='https://graph.org/file/bc08fcf7de6be2a88057a-76431830a0d3ffd01d.jpg', message=final_check)
+    elif event.pattern_match.group(1) == "الاوامر":
+        final_nshr = """
+ 
+        ⋆┄─┄F I N A L─┄┄⋆
+       ` .م1 ` ➪ اوامــر النشــر التلقــائي
+       ` .م2 ` ➪ اوامــر الـذاتيــة
+        ⋆┄─┄ @i0i0ii┄┄┄⋆
+"""
+        await event.reply(message=final_nshr)
+    elif event.pattern_match.group(1) == "م2":
+        final_wgt = """
+ 
+        ~ .ذاتية
+يستخدم لحفظ الصور والفيديوهات المؤقتة (بالرد على الصورة).
+
+       ~ .حفظ الذاتية
+سيقوم هذا الامر بعد تفعيلة بحفظ الصور والفيديوهات المؤقته تلقائيا .
+"""
+        await event.reply(message=final_wgt)
+
+
+from os import remove
+
+auto_save_enabled = False
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r'\.واو|\.حفظ الذاتية'))
+async def rundrc(event):
+    await event.delete()
+    if event.pattern_match.group(0) == ".ذاتية":
+        try:
+            getrestrictedcontent = await event.get_reply_message()
+            downloadrestrictedcontent = await getrestrictedcontent.download_media()
+            await event.client.send_file("me", downloadrestrictedcontent)
+            remove(downloadrestrictedcontent)
+        except:
+            pass
+    elif event.pattern_match.group(0) == ".حفظ الذاتية":
+        global auto_save_enabled
+        auto_save_enabled = not auto_save_enabled
+        if auto_save_enabled:
+            await event.respond("تم تفعيل حفظ الوسائط ذاتية التدمير تلقائيًا.")
+        else:
+            await event.respond("تم إيقاف حفظ الوسائط ذاتية التدمير تلقائيًا.")
+
+@finalll.on(events.NewMessage)
+async def auto_save_media(event):
+    if auto_save_enabled:
+        try:
+            if event.media and event.media.ttl_seconds:
+                downloadrestrictedcontent = await event.download_media()
+                await event.client.send_file("me", downloadrestrictedcontent)
+                remove(downloadrestrictedcontent)
+        except:
+            pass
+
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.وسبام$"))
+async def word_spam_handler(event):
+    await event.delete()
+    message = await event.get_reply_message()
+    if not message or not message.text:
+        return await event.reply("   يجب الرد على رسالة نصية لاستخدام هذا الأمر.")
+
+    words = message.text.split()
+    for word in words:
+        await event.respond(word)
+        await asyncio.sleep(1)
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.تناوب (\d+)$"))
+async def rotate_handler(event):
+    await event.delete()
+    seconds = int(event.pattern_match.group(1))
+    message = await event.get_reply_message()
+    if not message:
+        return await event.reply("   يجب الرد على رسالة لاستخدام هذا الأمر.")
+
+    global final
+    final = True
+    chats = await finalll.get_dialogs()
+    groups = [chat for chat in chats if chat.is_group]
+    num_groups = len(groups)
+    current_group_index = 0
+
+    while final:
+        try:
+            if message.media:
+                await finalll.send_file(groups[current_group_index].id, message.media, caption=message.text)
+            else:
+                await finalll.send_message(groups[current_group_index].id, message.text)
+        except Exception as e:
+            print(f"Error in sending message to chat {groups[current_group_index].id}: {e}")
+
+        current_group_index = (current_group_index + 1) % num_groups
+        await asyncio.sleep(seconds)
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.خاص$"))
+async def private_handler(event):
+    await event.delete()
+    message = await event.get_reply_message()
+    if not message:
+        return await event.reply("   يجب الرد على رسالة لاستخدام هذا الأمر.")
+
+    chats = await finalll.get_dialogs()
+    private_chats = [chat for chat in chats if chat.is_user]
+
+    for chat in private_chats:
+        try:
+            if message.media:
+                await finalll.send_file(chat.id, message.media, caption=message.text)
+            else:
+                await finalll.send_message(chat.id, message.text)
+        except Exception as e:
+            print(f"Error in sending message to chat {chat.id}: {e}")
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.نقط (\d+)$"))
+async def dot_handler(event):
+    await event.delete()
+    seconds = int(event.pattern_match.group(1))
+    reply_to_msg = await event.get_reply_message()
+    if not reply_to_msg:
+        return await event.reply("   يجب الرد على رسالة لاستخدام هذا الأمر.")
+
+    global final
+    final = True
+
+    while final:
+        await reply_to_msg.reply(".")
+        await asyncio.sleep(seconds)
+
+
+@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.مكرر (\d+)$"))
+async def repeat_handler(event):
+    await event.delete()
+    seconds = int(event.pattern_match.group(1))
+    message = await event.get_reply_message()
+    if not message:
+        return await event.reply("   يجب الرد على رسالة لاستخدام هذا الأمر.")
+
+    global final
+    final = True
+
+    while final:
+        await message.respond(message)
+        await asyncio.sleep(seconds)
+
+
+print('تم تشغيل النشر التلقائي لسورس')
+finalll.run_until_disconnected()
