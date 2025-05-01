@@ -311,29 +311,46 @@ async def search_music(event):
         await event.edit("**⚠️ يرجى كتابة ما تريد البحث عنه بعد الأمر .بحث**")
         return
     
-    # إرسال الطلب إلى بوت الموسيقى
     try:
+        # الانضمام التلقائي للقناة
+        try:
+            await finalll(JoinChannelRequest('@B_a_r'))
+            await asyncio.sleep(2)  # انتظار 2 ثانية بعد الانضمام
+        except Exception as e:
+            print(f"حدث خطأ في الانضمام للقناة: {e}")
+
+        # إرسال الطلب إلى بوت الموسيقى
+        await event.edit("**⌛ جاري البحث عن الأغنية...**")
         await finalll.send_message('@BaarxXxbot', f'يوت {query}')
-        await event.edit(f"**✓ تم إرسال طلبك إلى البوت: يوت {query}**")
         
-        # الانتظار لرد البوت
-        async with finalll.conversation('@BaarxXxbot', timeout=20) as conv:
+        # الانتظار 5 ثواني قبل التحقق من الرد
+        await asyncio.sleep(5)
+
+        # استلام الرد من البوت
+        async with finalll.conversation('@BaarxXxbot', timeout=15) as conv:
             response = await conv.get_response()
             
-            if "يجب الاشتراك بالقناه اولا" in response.text:
-                await event.edit("**عزيزي اشترك بالقناة قبل استخدام الأمر\nهذه هي القناة @B_a_r**")
-            else:
-                # إعادة إرسال النتيجة إذا لم تكن رسالة اشتراك
-                await event.client.send_message(
+            # إعادة إرسال النتيجة مع حذف الوصف إذا كان موجوداً
+            if response.text and response.media:
+                # إذا كانت هناك ميديا (أغنية) مع نص
+                await event.delete()  # حذف رسالة "جاري البحث"
+                await event.client.send_file(
                     event.chat_id,
-                    response,
+                    response.media,
+                    caption="",
                     reply_to=event.message.reply_to_msg_id
                 )
-                
+            elif response.text:
+                # إذا كان نص فقط
+                await event.edit(response.text)
+            else:
+                await event.edit("**❌ لم يتم العثور على نتيجة**")
+
     except asyncio.TimeoutError:
         await event.edit("**⏳ انتهى وقت الانتظار للرد من البوت**")
     except Exception as e:
         await event.edit(f"**❌ حدث خطأ: {str(e)}**")
+        print(f"Error in search_music: {e}")
 
 @finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.وسبام$"))
 async def word_spam_handler(event):
