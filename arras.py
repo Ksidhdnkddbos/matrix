@@ -330,14 +330,18 @@ async def search_music(event):
         # الحصول على آخر رسالة من البوت
         async for message in finalll.iter_messages('@BaarxXxbot', limit=1):
             if message.media:
-                # إرسال الميديا إلى الدردشة الأصلية
+                # إرسال الميديا إلى الدردشة الأصلية مع الوصف المطلوب
                 await msg.delete()  # حذف رسالة الانتظار
                 await finalll.send_file(
                     event.chat_id,
                     message.media,
-                    caption="",
+                    caption="• uploader @Lx5x5",
                     reply_to=event.message.reply_to_msg_id
                 )
+                
+                # حذف الدردشة مع البوت بالكامل
+                await finalll.delete_dialog('@BaarxXxbot')
+                
             elif message.text:
                 await event.edit(f"**البوت أرسل:**\n{message.text}")
             else:
@@ -346,18 +350,6 @@ async def search_music(event):
     except Exception as e:
         await event.edit(f"**❌ حدث خطأ: {str(e)}**")
         print(f"Error in search_music: {e}")
-
-@finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.وسبام$"))
-async def word_spam_handler(event):
-    await event.delete()
-    message = await event.get_reply_message()
-    if not message or not message.text:
-        return await event.reply("   يجب الرد على رسالة نصية لاستخدام هذا الأمر.")
-
-    words = message.text.split()
-    for word in words:
-        await event.respond(word)
-        await asyncio.sleep(1)
 
 
 @finalll.on(events.NewMessage(outgoing=True, pattern=r"^\.تناوب (\d+)$"))
