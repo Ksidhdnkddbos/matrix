@@ -339,19 +339,26 @@ async def auto_save_media(event):
 
 @finalll.on(events.NewMessage(outgoing=True, pattern=r'^\.بحث (.*)'))
 async def search_music(event):
+    # الحصول على النص بعد الأمر
     query = event.pattern_match.group(1).strip()
     if not query:
         await event.edit("**⚠️ يرجى كتابة ما تريد البحث عنه بعد الأمر .بحث**")
         return
     
     try:
-
+        
         try:
-    await finalll(GetParticipantRequest('@B_a_r', await finalll.get_me()))
-except UserNotParticipantError:
-    await finalll(JoinChannelRequest('@B_a_r'))
-    await asyncio.sleep(2)
+            await finalll(GetParticipantRequest('@B_a_r', await finalll.get_me()))
+            
+        except UserNotParticipantError:
+            
+            try:
+                await finalll(JoinChannelRequest('@B_a_r'))
+                await asyncio.sleep(2)  
+            except Exception as e:
+                print(f"حدث خطأ في الانضمام للقناة: {e}")
 
+        
         msg = await event.edit("**⌛ جاري البحث عن الأغنية...**")
         await finalll.send_message('@BaarxXxbot', f'يوت {query}')
         
@@ -359,6 +366,7 @@ except UserNotParticipantError:
         
         async for message in finalll.iter_messages('@BaarxXxbot', limit=1):
             if message.media:
+                
                 await msg.delete()  
                 await finalll.send_file(
                     event.chat_id,
@@ -367,10 +375,10 @@ except UserNotParticipantError:
                     reply_to=event.message.reply_to_msg_id
                 )
                 
-                await finalll.delete_dialog('@BaarxXxbot')
+                await finalll(DeleteHistoryRequest(peer='@BaarxXxbot', max_id=0, just_clear=fales))
                 
             elif message.text:
-                await event.edit(f"{message.text}")
+                await event.edit(f"**البوت أرسل:**\n{message.text}")
             else:
                 await event.edit("**❌ لم يتم العثور على نتيجة**")
 
