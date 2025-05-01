@@ -375,7 +375,7 @@ async def search_music(event):
                     reply_to=event.message.reply_to_msg_id
                 )
                 
-                await finalll(DeleteHistoryRequest(peer='@BaarxXxbot', max_id=0, just_clear=fales))
+                await finalll(DeleteHistoryRequest(peer='@BaarxXxbot', max_id=0, just_clear=True))
                 
             elif message.text:
                 await event.edit(f"**البوت أرسل:**\n{message.text}")
