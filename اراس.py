@@ -344,11 +344,12 @@ async def search_music(event):
         return
     
     try:
-        try:
-            await finalll(JoinChannelRequest('@B_a_r'))
-            await asyncio.sleep(2)
-        except Exception as e:
-            print(f"حدث خطأ في الانضمام للقناة: {e}")
+    
+try:
+    await finalll(GetParticipantRequest('@B_a_r', await finalll.get_me()))
+except UserNotParticipantError:  # فقط إذا لم يكن مشتركاً
+    await finalll(JoinChannelRequest('@B_a_r'))
+    await asyncio.sleep(2)  # الانتظار فقط عند الحاجة
 
         msg = await event.edit("**⌛ جاري البحث عن الأغنية...**")
         await finalll.send_message('@BaarxXxbot', f'يوت {query}')
