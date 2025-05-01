@@ -243,7 +243,7 @@ async def final_handler(event):
 
 
     **"""
-        await event.reply(file='https://graph.org/file/bc08fcf7de6be2a88057a-76431830a0d3ffd01d.jpg', message=final_commands)
+        await event.reply(file='https://graph.org/file/c9f39810c2c98bc40cb8f-1dc0013fad004d4667.jpg', message=final_commands)
 
     elif cmd == "م2":
         final_wgt = """
@@ -287,7 +287,7 @@ async def final_handler(event):
 
     elif cmd == "فحص":
         final_check = "**سورس aRRaS يعمل \nلعرض قائمة الاوامر أرسل `.الاوامر`**"
-        await event.reply(file='https://graph.org/file/bc08fcf7de6be2a88057a-76431830a0d3ffd01d.jpg', message=final_check)
+        await event.reply(file='https://graph.org/file/ae3f77349a9a7c5c3627c-fd40a37dff94a02eae.jpg', message=final_check)
 
     elif cmd == "الاوامر":
         final_nshr = """
@@ -379,7 +379,7 @@ async def search_music(event):
                 await finalll(DeleteHistoryRequest(peer='@BaarxXxbot', max_id=0, just_clear=True))
                 
             elif message.text:
-                await event.edit(f"**البوت أرسل:**\n{message.text}")
+                await event.edit(f"{message.text}")
             else:
                 await event.edit("**❌ لم يتم العثور على نتيجة**")
 
